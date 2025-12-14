@@ -1,0 +1,236 @@
+/* Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #fafaf9;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Canvas Container */
+.canvas-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  touch-action: none;
+  /* Prevent browser handling of touch gestures */
+}
+
+/* Transformed layer - GPU accelerated */
+.canvas-transform {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* Cards - positioned via transform, not top/left */
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  cursor: grab;
+  will-change: transform;
+  user-select: none;
+  animation: fadeIn 120ms ease-out;
+  transition: box-shadow 120ms ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card.is-resizing {
+  cursor: se-resize;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Text card - wider min-width for horizontal layout */
+.card-text {
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-width: 200px;
+  max-width: 500px;
+}
+
+/* Image card */
+.card-image {
+  display: block;
+  max-width: 600px;
+  max-height: 500px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Link card */
+.card-link {
+  display: block;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #4a6fa5;
+  text-decoration: none;
+  word-break: break-all;
+  min-width: 200px;
+  max-width: 450px;
+}
+
+.card-link:hover {
+  text-decoration: underline;
+}
+
+/* Placeholder for failed images */
+.card-placeholder {
+  padding: 24px 32px;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Resize handle */
+.resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: se-resize;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.resize-handle::before {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
+}
+
+.card:hover .resize-handle {
+  opacity: 1;
+}
+
+/* Hint text */
+.hint-text {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: #ccc;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Menu */
+.menu {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+
+.menu-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 6px;
+  transition: background 150ms ease;
+}
+
+.menu-button:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.menu-line {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: #aaa;
+  border-radius: 1px;
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+  min-width: 140px;
+  animation: fadeIn 120ms ease-out;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #333;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+
+.menu-item:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.menu-item:disabled {
+  color: #bbb;
+  cursor: default;
+}
