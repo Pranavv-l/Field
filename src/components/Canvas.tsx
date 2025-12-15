@@ -206,7 +206,7 @@ export function Canvas() {
             )}
 
             <Menu />
-            <FontSizeControl selectedCard={cards.find(c => c.id === selectedCardId) || null} />
+            <FontSizeControl card={cards.find(c => c.id === selectedCardId) || null} />
         </div>
     );
 }

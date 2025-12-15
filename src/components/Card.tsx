@@ -1,5 +1,6 @@
 import { useEffect, useRef, memo, useState } from 'react';
 import type { Card as CardType } from '../types';
+import { ContentEditable } from './ContentEditable';
 
 interface CardProps {
     card: CardType;
@@ -29,7 +30,6 @@ export const Card = memo(function Card({
     onDelete,
 }: CardProps) {
     const cardRef = useRef<HTMLDivElement>(null);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const [localContent, setLocalContent] = useState(card.content);
 
     // Sync local content when card content changes from outside
@@ -50,13 +50,7 @@ export const Card = memo(function Card({
         };
     }, [card.id, registerDrag, unregisterDrag, registerResize, unregisterResize]);
 
-    // Focus textarea when editing starts
-    useEffect(() => {
-        if (isEditing && textareaRef.current) {
-            textareaRef.current.focus();
-            textareaRef.current.select();
-        }
-    }, [isEditing]);
+    // Focus is handled by ContentEditable internally when isEditing becomes true
 
     // Handle click to select
     const handleClick = (e: React.MouseEvent) => {
@@ -71,29 +65,17 @@ export const Card = memo(function Card({
         onDelete(card.id);
     };
 
-    // Handle textarea changes
-    const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setLocalContent(e.target.value);
-    };
-
-    // Save content on blur
+    // Save content on blur or delete if empty
     const handleTextBlur = () => {
-        if (localContent !== card.content) {
+        // Use a more robust check for "empty" (remove resizing/whitespace)
+        const cleanContent = localContent.replace(/<[^>]*>/g, '').trim();
+
+        if (!cleanContent) {
+            onDelete(card.id);
+        } else if (localContent !== card.content) {
             onContentUpdate(card.id, localContent);
         }
         onBlur();
-    };
-
-    // Handle Enter to save (Shift+Enter for newline)
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            (e.target as HTMLTextAreaElement).blur();
-        }
-        if (e.key === 'Escape') {
-            setLocalContent(card.content);
-            onBlur();
-        }
     };
 
     const style: React.CSSProperties = {
@@ -131,22 +113,25 @@ export const Card = memo(function Card({
             onContextMenu={handleContextMenu}
         >
             {card.type === 'text' && (
-                isEditing ? (
-                    <textarea
-                        ref={textareaRef}
-                        className="card-text-input"
-                        value={localContent}
-                        onChange={handleTextChange}
-                        onBlur={handleTextBlur}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Type something..."
-                        style={getTextStyle()}
-                    />
-                ) : (
-                    <div className="card-text" style={getTextStyle()}>
-                        {card.content || <span className="card-placeholder-text">Empty card</span>}
-                    </div>
-                )
+                <div className="card-text" style={getTextStyle()}>
+                    {isEditing ? (
+                        <ContentEditable
+                            html={localContent}
+                            className="card-text-editable"
+                            onChange={setLocalContent}
+                            onBlur={handleTextBlur}
+                            style={{
+                                width: '100%',
+                                outline: 'none',
+                                // Let parent flexbox handle vertical centering
+                                // Do NOT force height 100% or it will align to top
+                            }}
+                            placeholder="Type something..."
+                        />
+                    ) : (
+                        card.content || <span className="card-placeholder-text">Empty card</span>
+                    )}
+                </div>
             )}
 
             {card.type === 'image' && (

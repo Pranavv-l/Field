@@ -63,10 +63,11 @@ body {
   cursor: nwse-resize;
 }
 
-/* Selection outline - simple border with corner brackets */
+/* Selection outline - Faint border */
 .card-selected {
-  outline: 1px solid rgba(60, 60, 60, 0.4);
-  outline-offset: 2px;
+  border: 0.1px solid rgba(0, 0, 0, 0.1);
+  /* Faint border in light mode */
+  outline: none;
 }
 
 /* Text card - content determines size */
@@ -78,8 +79,9 @@ body {
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-word;
-  min-width: 80px;
-  min-height: 24px;
+  min-width: 200px;
+  /* Slightly bigger initial box */
+  min-height: 48px;
   /* Center text */
   display: flex;
   align-items: center;
@@ -116,7 +118,7 @@ body {
   font-size: 13px;
 }
 
-/* Resize handles */
+/* Resize handles - Invisible hitboxes */
 .resize-handle {
   position: absolute;
   width: 12px;
@@ -125,38 +127,109 @@ body {
   z-index: 10;
 }
 
-.resize-handle::before {
+/* Corner Brackets using ::before (horizontal) and ::after (vertical) lines to form L shape */
+.resize-handle::before,
+.resize-handle::after {
   content: '';
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 6px;
-  height: 6px;
-  background: rgba(60, 60, 60, 0.6);
+  background: #333;
+  /* Darker bracket for contrast against faint border */
 }
 
+/* Top-Left Bracket */
+.resize-handle-tl::before {
+  /* Horizontal */
+  top: 6px;
+  left: 6px;
+  width: 5px;
+  height: 1px;
+}
+
+.resize-handle-tl::after {
+  /* Vertical */
+  top: 6px;
+  left: 6px;
+  width: 1px;
+  height: 5px;
+}
+
+/* Top-Right Bracket */
+.resize-handle-tr::before {
+  /* Horizontal */
+  top: 6px;
+  right: 6px;
+  width: 5px;
+  height: 1px;
+}
+
+.resize-handle-tr::after {
+  /* Vertical */
+  top: 6px;
+  right: 6px;
+  width: 1px;
+  height: 5px;
+}
+
+/* Bottom-Left Bracket */
+.resize-handle-bl::before {
+  /* Horizontal */
+  bottom: 6px;
+  left: 6px;
+  width: 5px;
+  height: 1px;
+}
+
+.resize-handle-bl::after {
+  /* Vertical */
+  bottom: 6px;
+  left: 6px;
+  width: 1px;
+  height: 5px;
+}
+
+/* Bottom-Right Bracket */
+.resize-handle-br::before {
+  /* Horizontal */
+  bottom: 6px;
+  right: 6px;
+  width: 5px;
+  height: 1px;
+}
+
+.resize-handle-br::after {
+  /* Vertical */
+  bottom: 6px;
+  right: 6px;
+  width: 1px;
+  height: 5px;
+}
+
+/* Positioning hitboxes to center the bracket on the corner */
+/* The bracket vertex is at (6,6) inside the 12x12 handle. 
+   To align vertex with card corner (including 1px border):
+   TL: vertex is at top-left of handle. Place handle at -7,-7 (offset by 6px center + 1px border)
+*/
 .resize-handle-tl {
-  top: -6px;
-  left: -6px;
+  top: -7px;
+  left: -7px;
   cursor: nwse-resize;
 }
 
-
 .resize-handle-tr {
-  top: -6px;
-  right: -6px;
+  top: -7px;
+  right: -7px;
   cursor: nesw-resize;
 }
 
 .resize-handle-bl {
-  bottom: -6px;
-  left: -6px;
+  bottom: -7px;
+  left: -7px;
   cursor: nesw-resize;
 }
 
 .resize-handle-br {
-  bottom: -6px;
-  right: -6px;
+  bottom: -7px;
+  right: -7px;
   cursor: nwse-resize;
 }
 
@@ -200,53 +273,12 @@ body {
   background: rgba(0, 0, 0, 0.05);
 }
 
-.menu-line {
-  display: block;
-  width: 16px;
-  height: 1.5px;
-  background: #aaa;
-  border-radius: 1px;
-}
+/* Obsolete menu styles removed */
 
-.menu-dropdown {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
-  padding: 4px;
-  min-width: 140px;
-}
-
-.menu-item {
-  display: block;
-  width: 100%;
-  padding: 8px 12px;
-  font-size: 13px;
-  color: #333;
-  background: transparent;
-  border: none;
-  border-radius: 4px;
-  text-align: left;
-  cursor: pointer;
-  transition: background 100ms ease;
-}
-
-.menu-item:hover:not(:disabled) {
-  background: #f5f5f5;
-}
-
-.menu-item:disabled {
-  color: #bbb;
-  cursor: default;
-}
-
+/* Text input for editing */
 /* Text input for editing */
 .card-text-input {
   width: 100%;
-  min-width: 120px;
-  min-height: 40px;
   padding: 12px 16px;
   font-family: inherit;
   font-size: 14px;
@@ -256,11 +288,14 @@ body {
   resize: none;
   background: transparent;
   color: inherit;
-  /* Center text during edit */
   text-align: center;
-  /* Use flex positioning for vertical centering if needed, but textarea is tricky.
-     For now, text-align center handles horizontal. Vertical centering in textarea requires padding adjustment or flex parent.
-     Let's rely on padding and auto-height for vertical flow. */
+
+  /* Reset defaults to prevent "cursor above border" or jumping */
+  margin: 0;
+  box-sizing: border-box;
+  display: block;
+  overflow: hidden;
+  /* Hide scrollbars if possible */
 }
 
 .card-placeholder-text {
@@ -268,29 +303,152 @@ body {
   font-style: italic;
 }
 
-/* Font size control - only visible when text card selected */
-.font-size-control {
+/* Sidebar */
+.sidebar {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
+  top: 0;
+  right: 0;
+  width: 65px;
+  height: 100%;
+  /* Inverted theme colors */
+  background: #1a1a1a;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding-top: 80px;
+  /* Space for menu button */
+  padding-bottom: 24px;
+}
+
+.sidebar-item {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #FAFAFA;
+  /* Light text for dark sidebar */
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.clear-btn {
+  /* "Much more up" - removed auto margins */
+  margin-top: 24px;
+  margin-bottom: auto;
+  /* User said "alligned centrally". Let's assume standard rotation or standard text. 65px fits "Clear" horizontally if font is small. */
+  writing-mode: horizontal-tb;
+  transform: none;
+}
+
+.sidebar-item:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.theme-btn {
+  margin-top: auto;
+  /* Push to bottom */
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  padding: 4px 8px;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  min-width: 48px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.theme-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Restore Menu Line Styles */
+.menu-line {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: #aaa;
+  /* Default color */
+  border-radius: 1px;
+}
+
+/* Ensure menu button lines are visible against inverted sidebar background when open */
+.sidebar.open~.menu-button .menu-line {
+  /* This selector still won't work easily without a wrapper, 
+     but the inline styles in Menu.tsx should take over if base styles exist.
+     Restoring base styles is the key fix here.
+  */
+}
+
+/* Font size control - Fixed Bottom Right of Main Canvas */
+.font-size-control {
+  position: fixed;
+  /* Global fixed position */
+  bottom: 32px;
+  /* Aligned with other controls */
+  right: 32px;
+  transform: scale(1);
+  /* Default scale */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* No bg, no border */
+  padding: 0;
+  z-index: 1002;
+  /* Above sidebar (1000) and everything else */
+  min-width: 32px;
+  height: 24px;
+  pointer-events: auto;
+}
+
+.font-size-anim-wrapper {
+  transform: scale(1);
+  /* Smooth transition for scale - Smooth not elastic */
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Ensure it centers content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.font-size-anim-wrapper.pop {
+  /* Scale up but not too aggressively */
+  transform: scale(2.0);
+}
+
+.font-size-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* Increased gap to prevent overlap when scaling */
+}
+
+.font-size-icon {
+  opacity: 0.5;
+  margin-top: 1px;
 }
 
 .font-size-value {
   font-size: 14px;
   font-weight: 500;
   color: #333;
+  /* Dark text for light card */
   user-select: none;
+  cursor: ns-resize;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  /* Readability */
 }
 
 .font-size-input {
@@ -314,18 +472,28 @@ body {
   margin: 0;
 }
 
-/* Dark mode styles for font control */
-body.dark .font-size-control {
-  background: rgba(40, 40, 40, 0.95);
-  border-color: rgba(255, 255, 255, 0.1);
+/* Dark mode styles for sidebar (Light background) */
+body.dark .sidebar {
+  background: #FAFAFA;
 }
 
+body.dark .sidebar-item {
+  color: #1a1a1a;
+}
+
+body.dark .theme-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark mode styles for font control */
 body.dark .font-size-value,
 body.dark .font-size-input {
   color: #e5e5e5;
+  /* Light text on dark card */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-/* Dark mode */
+/* Inherited Dark Mode styles */
 body.dark {
   background-color: #1a1a1a;
   color: #e5e5e5;
@@ -335,50 +503,22 @@ body.dark .canvas-container {
   background-color: #1a1a1a;
 }
 
+
 body.dark .card-selected {
-  outline-color: rgba(200, 200, 200, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-body.dark .resize-handle::before {
-  background: rgba(200, 200, 200, 0.5);
+body.dark .resize-handle::before,
+body.dark .resize-handle::after {
+  background: #ccc;
 }
 
 body.dark .card-link {
   color: #7eb3e5;
 }
 
-body.dark .menu-dropdown {
-  background: #2a2a2a;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-}
-
-body.dark .menu-item {
-  color: #e5e5e5;
-}
-
-body.dark .menu-item:hover:not(:disabled) {
-  background: #3a3a3a;
-}
-
-body.dark .menu-line {
-  background: #666;
-}
-
-body.dark .menu-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 body.dark .hint-text {
   color: #555;
-}
-
-body.dark .dark-mode-toggle {
-  color: #888;
-}
-
-body.dark .dark-mode-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ccc;
 }
 
 body.dark .card-placeholder-text {
