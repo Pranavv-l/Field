@@ -60,7 +60,7 @@ export function Canvas() {
         dragHandlerRef.current = dragHandler;
 
         const resizeHandler = createResizeHandler(
-            (cardId, w, h) => updateCardSize(cardId, w, h),
+            (cardId, x, y, w, h) => useCardStore.getState().updateCardGeometry(cardId, x, y, w, h),
             () => canvasController.getScale()
         );
         resizeHandlerRef.current = resizeHandler;

@@ -17,7 +17,7 @@ body,
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #fffbf4;
+  background-color: #FAFAFA;
   color: #1a1a1a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -71,6 +71,8 @@ body {
 
 /* Text card - content determines size */
 .card-text {
+  width: 100%;
+  height: 100%;
   padding: 12px 16px;
   font-size: 14px;
   line-height: 1.6;
@@ -78,6 +80,11 @@ body {
   word-break: break-word;
   min-width: 80px;
   min-height: 24px;
+  /* Center text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 /* Image card - natural size, scaling done via transform in component */
@@ -109,14 +116,11 @@ body {
   font-size: 13px;
 }
 
-/* Single resize handle at bottom-right */
+/* Resize handles */
 .resize-handle {
   position: absolute;
-  right: -4px;
-  bottom: -4px;
   width: 12px;
   height: 12px;
-  cursor: nwse-resize;
   display: none;
   z-index: 10;
 }
@@ -129,6 +133,31 @@ body {
   width: 6px;
   height: 6px;
   background: rgba(60, 60, 60, 0.6);
+}
+
+.resize-handle-tl {
+  top: -6px;
+  left: -6px;
+  cursor: nwse-resize;
+}
+
+
+.resize-handle-tr {
+  top: -6px;
+  right: -6px;
+  cursor: nesw-resize;
+}
+
+.resize-handle-bl {
+  bottom: -6px;
+  left: -6px;
+  cursor: nesw-resize;
+}
+
+.resize-handle-br {
+  bottom: -6px;
+  right: -6px;
+  cursor: nwse-resize;
 }
 
 /* Hint text */
@@ -227,6 +256,11 @@ body {
   resize: none;
   background: transparent;
   color: inherit;
+  /* Center text during edit */
+  text-align: center;
+  /* Use flex positioning for vertical centering if needed, but textarea is tricky.
+     For now, text-align center handles horizontal. Vertical centering in textarea requires padding adjustment or flex parent.
+     Let's rely on padding and auto-height for vertical flow. */
 }
 
 .card-placeholder-text {
@@ -241,45 +275,43 @@ body {
   right: 16px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 6px;
   padding: 4px 8px;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.font-size-btn {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  color: #555;
-  transition: background 100ms ease;
-}
-
-.font-size-btn:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.font-size-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
+  min-width: 48px;
+  height: 32px;
 }
 
 .font-size-value {
-  min-width: 28px;
-  text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   color: #333;
+  user-select: none;
+}
+
+.font-size-input {
+  width: 40px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.font-size-input::-webkit-outer-spin-button,
+.font-size-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Dark mode styles for font control */
@@ -288,15 +320,8 @@ body.dark .font-size-control {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-body.dark .font-size-btn {
-  color: #ccc;
-}
-
-body.dark .font-size-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-body.dark .font-size-value {
+body.dark .font-size-value,
+body.dark .font-size-input {
   color: #e5e5e5;
 }
 

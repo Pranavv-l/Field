@@ -11,6 +11,7 @@ interface CardStore {
     addCard: (card: Card) => void;
     updateCardPosition: (id: string, x: number, y: number) => void;
     updateCardSize: (id: string, w: number, h: number) => void;
+    updateCardGeometry: (id: string, x: number, y: number, w: number, h: number) => void;
     updateCardContent: (id: string, content: string) => void;
     updateCardFontSize: (id: string, fontSize: number) => void;
     removeCard: (id: string) => void;
@@ -50,6 +51,18 @@ export const useCardStore = create<CardStore>((set, get) => ({
         const card = cards.find((c) => c.id === id);
         if (card) {
             const updated = { ...card, size: { w, h } };
+            set((state) => ({
+                cards: state.cards.map((c) => (c.id === id ? updated : c)),
+            }));
+            saveCard(updated);
+        }
+    },
+
+    updateCardGeometry: (id: string, x: number, y: number, w: number, h: number) => {
+        const cards = get().cards;
+        const card = cards.find((c) => c.id === id);
+        if (card) {
+            const updated = { ...card, position: { x, y }, size: { w, h } };
             set((state) => ({
                 cards: state.cards.map((c) => (c.id === id ? updated : c)),
             }));

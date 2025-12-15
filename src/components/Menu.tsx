@@ -47,8 +47,13 @@ export function Menu() {
 
             {isOpen && (
                 <div className="menu-dropdown">
-                    <button className="menu-item" onClick={handleToggleDark}>
-                        {isDark ? '☀️ Light mode' : '🌙 Dark mode'}
+                    <button
+                        className="menu-item"
+                        onClick={handleToggleDark}
+                        title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}
+                    >
+                        {isDark ? '☀️' : '🌙'}
                     </button>
                     <button
                         className="menu-item"
